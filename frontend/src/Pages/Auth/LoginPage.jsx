@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Auth.css";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
 	const navigate = useNavigate();
@@ -9,9 +9,32 @@ const LoginPage = () => {
 		password: "",
 	});
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		// Handle login logic
+
+		try {
+			console.log("login");
+			const response = await fetch("http://localhost:3000/api/login", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(credentials),
+			});
+
+			const data = await response.json();
+
+			if (response.ok) {
+				// Simpan token dan redirect
+				localStorage.setItem("token", data.token);
+				alert("Login successful!");
+				navigate("/dashboard");
+			} else {
+				alert(data.message || "Login failed, please try again.");
+			}
+		} catch (error) {
+			alert("Error connecting to server. Please try again later.");
+		}
 	};
 
 	return (
@@ -46,14 +69,13 @@ const LoginPage = () => {
 					<i className="fas fa-lock icon"></i>
 				</div>
 
-				<button type="submit" className="auth-btn">
-					Sign In
-				</button>
+				<button type="submit" className="auth-btn">Sign In</button>
 			</form>
 
 			<div className="auth-footer">
 				<p>
-					Don't have an account? <span onClick={() => navigate('/register')}>Sign Up</span>
+					Don't have an account?{" "}
+					<span onClick={() => navigate("/register")}>Sign Up</span>
 				</p>
 				<div className="social-login">
 					<button className="social-btn google">

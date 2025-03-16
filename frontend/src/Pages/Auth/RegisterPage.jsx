@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Auth.css";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
 	const navigate = useNavigate();
@@ -18,9 +18,29 @@ const RegisterPage = () => {
 		setStep((prev) => prev + 1);
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		// Handle registration logic
+
+		try {
+			const response = await fetch("http://localhost:3000/api/register", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(formData),
+			});
+
+			const data = await response.json();
+
+			if (response.ok) {
+				alert("Registration successful!");
+				navigate("/login"); // Arahkan ke halaman login setelah berhasil registrasi
+			} else {
+				alert(data.message || "Registration failed, please try again.");
+			}
+		} catch (error) {
+			alert("Error connecting to server. Please try again later.");
+		}
 	};
 
 	return (
